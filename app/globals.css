@@ -1755,3 +1755,257 @@ a:focus-visible {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* ——— Blog ——— */
+.section--blog,
+.section--blog-post {
+  padding-top: 8rem;
+  min-height: 100vh;
+}
+
+.blog__intro {
+  max-width: 36rem;
+  margin-bottom: 2.5rem;
+}
+
+.blog__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 720px) {
+  .blog__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.blog__card {
+  margin: 0;
+}
+
+.blog__card article {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+/* Blog images: 16/10 crop, centered subject */
+.blog__card-media,
+.blog-post__hero,
+.blog-post__figure {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.blog__card-media {
+  border-bottom: none;
+}
+
+.blog__card-media img,
+.blog-post__hero img,
+.blog-post__figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.blog__card-media img {
+  transition: transform 0.4s var(--ease-out);
+}
+
+.blog__card:hover .blog__card-media img {
+  transform: scale(1.03);
+}
+
+.blog__card-body {
+  padding: 1.25rem 1.35rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.65rem;
+}
+
+.blog__date {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+
+.blog__card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.blog__card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.blog__card-title a:hover {
+  color: var(--accent);
+}
+
+.blog__excerpt {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--fg-muted);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.blog__tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.blog__tag {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+}
+
+.blog__read-more {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.blog__read-more:hover {
+  text-decoration: underline;
+}
+
+.blog-post__inner {
+  max-width: 42rem;
+}
+
+.blog-post__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.blog-post__back {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.blog-post__back:hover {
+  color: var(--accent);
+}
+
+.blog-post__date {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.blog-post__title {
+  margin-top: 0;
+}
+
+.blog__tags--post {
+  margin: 1rem 0 1.5rem;
+}
+
+.blog-post__hero {
+  margin: 0 auto 2rem;
+}
+
+.blog-post__hero--full {
+  aspect-ratio: auto;
+  max-width: min(100%, 26rem);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.blog-post__hero--full img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  object-position: center center;
+}
+
+.blog-post__figure {
+  margin: 2rem auto;
+}
+
+/* za-balsu mid: native 1024×680, keep runners in frame */
+.section--blog-post .blog-post__figure--za-balsu-mid {
+  aspect-ratio: 1024 / 680;
+  width: 100%;
+  max-width: 1024px;
+}
+
+.section--blog-post .blog-post__figure--za-balsu-mid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.blog-post__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.blog-post__h2 {
+  margin: 2rem 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--fg);
+}
+
+.blog-post__content .blog-post__h2:first-child {
+  margin-top: 0;
+}
+
+.blog-post__p {
+  margin: 0;
+  color: var(--fg-muted);
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+
+.blog-post__follow {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}

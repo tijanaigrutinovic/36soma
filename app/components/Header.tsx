@@ -16,6 +16,19 @@ function localeSwitchTargets(pathname: string): { en: string; sr: string } {
     return { en: "/contact/", sr: "/sr/contact/" };
   }
 
+  if (path === "/blog" || path.startsWith("/blog/")) {
+    const slug = path.replace(/^\/blog\/?/, "");
+    return slug
+      ? { en: `/blog/${slug}/`, sr: `/sr/blog/${slug}/` }
+      : { en: "/blog/", sr: "/sr/blog/" };
+  }
+  if (path === "/sr/blog" || path.startsWith("/sr/blog/")) {
+    const slug = path.replace(/^\/sr\/blog\/?/, "");
+    return slug
+      ? { en: `/blog/${slug}/`, sr: `/sr/blog/${slug}/` }
+      : { en: "/blog/", sr: "/sr/blog/" };
+  }
+
   return { en: "/", sr: "/sr/" };
 }
 
@@ -65,6 +78,9 @@ export function Header({ locale = "en" }: HeaderProps) {
         <a href={page(sectionHash(loc, "training"))} onClick={closeMenu}>
           {isSr ? "Treninzi" : "Training"}
         </a>
+        <Link href={isSr ? "/sr/blog/" : "/blog/"} onClick={closeMenu}>
+          {isSr ? "Blog" : "Blog"}
+        </Link>
         <a href={page("/contact/")} onClick={closeMenu}>
           {isSr ? "Kontakt" : "Contact"}
         </a>
