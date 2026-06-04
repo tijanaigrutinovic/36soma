@@ -1,3 +1,5 @@
+import { CLUB_EMAIL, clubMailto } from "../lib/contact";
+
 type FooterProps = {
   locale?: "en" | "sr";
 };
@@ -10,6 +12,12 @@ export function Footer({ locale = "en" }: FooterProps) {
         <span>RUN</span>
         <span>RUN</span>
         <span>RUN</span>
+      </div>
+      <div className="site-footer__reach">
+        <span className="site-footer__reach-label">{isSr ? "Piši nam" : "Write us"}</span>
+        <a className="site-footer__email" href={clubMailto}>
+          {CLUB_EMAIL}
+        </a>
       </div>
       <div className="site-footer__row">
         <p className="site-footer__legal">

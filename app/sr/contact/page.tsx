@@ -1,5 +1,6 @@
 import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
+import { CLUB_EMAIL, clubMailto } from "../../lib/contact";
 
 export default function ContactPageSr() {
   return (
@@ -17,6 +18,13 @@ export default function ContactPageSr() {
             </p>
             <p className="cta__text" style={{ marginTop: "-0.25rem", fontSize: "0.95rem" }}>
               Adresa kluba: Tomislava Andrica Dzigija 53, Kraljevo, Raski okrug, 36000 Srbija.
+            </p>
+            <p className="cta__text cta__text--email">
+              Ili nam piši na{" "}
+              <a className="cta__email" href={clubMailto}>
+                {CLUB_EMAIL}
+              </a>
+              .
             </p>
 
             <form className="cta__links" style={{ maxWidth: "42rem", width: "100%", gap: "0.85rem" }}>

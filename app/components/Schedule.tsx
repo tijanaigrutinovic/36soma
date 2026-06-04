@@ -29,9 +29,10 @@ export function Schedule({ locale = "en" }: ScheduleProps) {
                 posle. Okupljamo se na <strong>Gradskoj terasi</strong>, pa zajedno krećemo na rutu.
               </p>
               <p>
-                <strong>Utorkom je prijem novih članova.</strong> Javi nam se preko Instagrama,
-                WhatsApp-a ili Strave. Pitaj šta god ti treba ili nam samo reci kada možeš da dođeš
-                prvi put. Uvek se nalazimo na <strong>Gradskoj terasi</strong> u Kraljevu.
+                <strong>Utorak je rezervisan za probijanje leda i nove ljude.</strong> Ako dolaziš prvi
+                put, to je tvoj dan. Javi nam se preko Instagrama, WhatsApp-a ili Strave — pitaj šta god
+                ti treba ili samo reci kada možeš da dođeš. Uvek se nalazimo na{" "}
+                <strong>Gradskoj terasi</strong> u Kraljevu.
               </p>
             </>
           ) : (
@@ -41,9 +42,10 @@ export function Schedule({ locale = "en" }: ScheduleProps) {
                 for coffee after. We meet at <strong>City Terrace</strong>, then head out together.
               </p>
               <p>
-                <strong>Tuesdays are when we welcome new members.</strong> Reach out on Instagram,
-                WhatsApp, or Strava — ask anything, or just tell us when you can come for your first
-                session. We always meet at <strong>City Terrace</strong> in Kraljevo.
+                <strong>Tuesday is for breaking the ice and meeting new people.</strong> If it&apos;s
+                your first time, that&apos;s your day. Reach out on Instagram, WhatsApp, or Strava — ask
+                anything, or just tell us when you can come. We always meet at <strong>City Terrace</strong>{" "}
+                in Kraljevo.
               </p>
             </>
           )}
@@ -56,7 +58,7 @@ export function Schedule({ locale = "en" }: ScheduleProps) {
             </div>
             <span className="schedule__card-time">20:00</span>
             <span className="schedule__card-note">
-              {isSr ? "večernje trčanje · prijem novih članova" : "evening run · new members welcome"}
+              {isSr ? "večernje trčanje · tvoj prvi dan" : "evening run · your first day"}
             </span>
             <span className="schedule__card-meta">{isSr ? "Gradska terasa" : "City Terrace"}</span>
           </article>

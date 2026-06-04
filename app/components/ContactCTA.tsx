@@ -1,3 +1,4 @@
+import { CLUB_EMAIL, clubMailto } from "../lib/contact";
 import { sectionId } from "../lib/sections";
 import { SiteImage } from "./SiteImage";
 
@@ -23,7 +24,7 @@ export function ContactCTA({ locale = "en" }: ContactCTAProps) {
               <p className="cta__text js-cta-text">
                 {isSr ? (
                   <>
-                    Javi nam se preko Instagrama, WhatsApp-a ili Strave. Pitaj šta god ti treba ili nam
+                    Javi nam se na Instagramu, WhatsApp-u ili Stravi. Pitaj šta god ti treba ili nam
                     samo reci kada možeš da dođeš prvi put. Uvek se nalazimo na{" "}
                     <strong>Gradskoj terasi</strong> u Kraljevu.
                   </>
