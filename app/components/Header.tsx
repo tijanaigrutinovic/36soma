@@ -1,9 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { asset } from "../lib/asset";
 import { sectionHash } from "../lib/sections";
+
+function localeSwitchTargets(pathname: string): { en: string; sr: string } {
+  const path = pathname.replace(/\/$/, "") || "/";
+
+  if (path === "/contact") {
+    return { en: "/contact/", sr: "/sr/contact/" };
+  }
+  if (path === "/sr/contact") {
+    return { en: "/contact/", sr: "/sr/contact/" };
+  }
+
+  return { en: "/", sr: "/sr/" };
+}
 
 type HeaderProps = {
   locale?: "en" | "sr";
@@ -11,6 +25,8 @@ type HeaderProps = {
 
 export function Header({ locale = "en" }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const lang = localeSwitchTargets(pathname ?? "/");
 
   const closeMenu = () => setMenuOpen(false);
   const isSr = locale === "sr";
@@ -20,7 +36,7 @@ export function Header({ locale = "en" }: HeaderProps) {
 
   return (
     <header className="site-header">
-      <Link className="logo" href={page("/#top")} aria-label="36Soma Runners — back to top">
+      <Link className="logo" href={page("/")} aria-label="36Soma Runners — back to top">
         <span className="logo__num">36</span><span className="logo__num-span">Soma Runners</span>
       </Link>
 
@@ -51,9 +67,13 @@ export function Header({ locale = "en" }: HeaderProps) {
           {isSr ? "Kontakt" : "Contact"}
         </a>
         <div className="nav__lang">
-          <a href={asset("/#top")} onClick={closeMenu} aria-label="Switch to English">EN</a>
+          <a href={asset(lang.en)} onClick={closeMenu} aria-label="Switch to English">
+            EN
+          </a>
           <span>/</span>
-          <a href={asset("/sr/#top")} onClick={closeMenu} aria-label="Prebaci na srpski">SR</a>
+          <a href={asset(lang.sr)} onClick={closeMenu} aria-label="Prebaci na srpski">
+            SR
+          </a>
         </div>
       </nav>
     </header>

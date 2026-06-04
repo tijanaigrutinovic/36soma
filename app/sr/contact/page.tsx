@@ -1,3 +1,4 @@
+import { ContactForm } from "../../components/ContactForm";
 import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { CLUB_EMAIL, clubMailto } from "../../lib/contact";
@@ -27,31 +28,7 @@ export default function ContactPageSr() {
               .
             </p>
 
-            <form className="cta__links" style={{ maxWidth: "42rem", width: "100%", gap: "0.85rem" }}>
-              <input
-                required
-                name="name"
-                placeholder="Ime i prezime"
-                style={{ width: "100%", padding: "0.9rem 1rem", background: "#101010", color: "#f2f2ec", border: "1px solid #3a3a36" }}
-              />
-              <input
-                required
-                type="email"
-                name="email"
-                placeholder="Email"
-                style={{ width: "100%", padding: "0.9rem 1rem", background: "#101010", color: "#f2f2ec", border: "1px solid #3a3a36" }}
-              />
-              <textarea
-                required
-                name="message"
-                placeholder="Poruka"
-                rows={6}
-                style={{ width: "100%", padding: "0.9rem 1rem", background: "#101010", color: "#f2f2ec", border: "1px solid #3a3a36" }}
-              />
-              <button className="btn btn--magnetic" type="submit">
-                Pošalji
-              </button>
-            </form>
+            <ContactForm locale="sr" />
           </div>
         </section>
       </main>
