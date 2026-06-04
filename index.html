@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="sr" class="is-loading">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="36Soma Runners — running klub iz Kraljeva. Zajednički treninzi, trke i ekipa bez elitizma."
+    />
+    <title>36Soma Runners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div
+      id="page-loader"
+      class="page-loader"
+      aria-busy="true"
+      aria-live="polite"
+      aria-label="Učitavanje"
+    >
+      <div class="page-loader__stage">
+        <div class="page-loader__ring-wrap">
+          <svg
+            class="page-loader__svg"
+            viewBox="0 0 300 300"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <path
+                id="intro-ring-path"
+                fill="none"
+                d="M 150,150 m -118,0 a 118,118 0 1,1 236,0 a 118,118 0 1,1 -236,0"
+              />
+            </defs>
+            <text class="page-loader__text">
+              <textPath href="#intro-ring-path" startOffset="0%">
+                36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners · 36Soma Runners ·
+              </textPath>
+            </text>
+          </svg>
+        </div>
+        <div class="page-loader__center" aria-hidden="true">36</div>
+      </div>
+    </div>
+
+    <a class="skip-link" href="#main">Preskoči na sadržaj</a>
+
+    <div class="cursor" id="cursor" aria-hidden="true" data-cursor>
+      <span class="cursor__ring"></span>
+      <span class="cursor__dot"></span>
+    </div>
+
+    <header class="site-header">
+      <a class="logo" href="#top" aria-label="36Soma Runners — početna strana"><span class="logo__num">36</span> soma</a>
+      <nav class="nav" aria-label="Glavna navigacija">
+        <a href="#top">Početna</a>
+        <a href="#priča">O klubu</a>
+        <a href="#slike">Galerija</a>
+        <a href="#termini">Trening</a>
+        <a href="/kontakt">Kontakt forma</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section id="top" class="hero hero--media" aria-labelledby="hero-title">
+        <div class="hero__media" aria-hidden="true">
+          <img
+            class="hero__media-img"
+            src="media/FK2A1154.JPG"
+            alt="Grupa 36Soma Runners na treningu u Kraljevu"
+            width="2000"
+            height="1333"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+        <div class="hero__noise" aria-hidden="true"></div>
+        <div class="hero__scan" aria-hidden="true"></div>
+        <div class="hero__grid" aria-hidden="true"></div>
+        <div class="hero__vignette" aria-hidden="true"></div>
+        <div class="hero__water js-hero-parallax" aria-hidden="true">36</div>
+        <div class="hero__line" aria-hidden="true"></div>
+        <div class="hero__layout">
+          <div class="hero__main">
+            <p class="hero__tag js-reveal">Kraljevo · running klub</p>
+            <h1 id="hero-title" class="hero__title">
+              <span class="hero__title-line">
+                <span class="js-hero-word">36</span> <span class="js-hero-word">soma</span>
+              </span>
+              <span class="hero__title-line hero__title-line--accent js-hero-runners">runners</span>
+            </h1>
+            <p class="hero__lead js-reveal">
+              <span class="hero__lead-inner js-hero-lead">Trčimo zajedno u Kraljevu, u različitim tempima. Bitno je da stigneš — i da posle treninga ostaneš na razgovoru, ne samo na statistici.</span>
+            </p>
+          </div>
+          <aside class="hero__aside">
+            <div class="hero__stat js-reveal">
+              <span class="hero__stat-label">atmosfera</span>
+              <span class="hero__stat-value">bez žurbe</span>
+              <span class="hero__stat-note">tempo se dogovara, ne nameće</span>
+            </div>
+            <div class="hero__stat js-reveal">
+              <span class="hero__stat-label">Kraljevo</span>
+              <span class="hero__stat-value">zajedno</span>
+              <span class="hero__stat-note">Gradska terasa · termini ispod</span>
+            </div>
+            <div class="hero__meta">
+              <span class="hero__timer js-hero-timer" aria-hidden="true">00:00:00</span>
+              <a class="hero__scroll hero__scroll--primary js-reveal magnetic" href="#termini" data-magnetic>Trening · termini</a>
+              <a class="hero__scroll js-reveal magnetic" href="#slike" data-magnetic>Galerija</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="termini" class="section section--schedule" aria-labelledby="termini-title">
+        <div class="section__inner section--schedule__inner">
+          <p class="story__eyebrow js-termini-eyebrow">Trening</p>
+          <h2 id="termini-title" class="section__heading section__heading--xl js-section-title">Kada i gde treniramo</h2>
+          <p class="schedule__intro js-schedule-intro">
+            Redovni termini u <strong>Kraljevu</strong>. <strong>Okupljanje je uvek na Gradskoj terasi</strong> — odande krećemo na stazu. Javi se kada dolaziš prvi put, da zna ko te čeka.
+          </p>
+          <div class="schedule__grid">
+            <article class="schedule__card js-schedule-card">
+              <span class="schedule__card-day">Utorak</span>
+              <span class="schedule__card-time">19:00</span>
+              <span class="schedule__card-note">večernji trening</span>
+            </article>
+            <article class="schedule__card js-schedule-card">
+              <span class="schedule__card-day">Četvrtak</span>
+              <span class="schedule__card-time">19:00</span>
+              <span class="schedule__card-note">večernji trening</span>
+            </article>
+            <article class="schedule__card js-schedule-card">
+              <span class="schedule__card-day">Nedelja</span>
+              <span class="schedule__card-time">08:00</span>
+              <span class="schedule__card-note">jutarnji trening</span>
+            </article>
+          </div>
+          <p class="schedule__mascot" aria-hidden="true">🐇</p>
+        </div>
+      </section>
+
+      <section id="slike" class="section section--gallery">
+        <div class="section__inner">
+          <p class="story__eyebrow js-gallery-eyebrow">Galerija</p>
+          <h2 class="section__heading section__heading--xl js-section-title">Momenti koje pamtimo sa staze</h2>
+          <p class="gallery__intro js-gallery-intro">
+            Zore, trke, grupa posle starta i smeh kad ne treba ni reč. Ispod su kadrovi iz naših treninga i izlazaka — mesto gde se klub najbolje vidi, ne u sloganima.
+          </p>
+          <ul class="gallery">
+            <li class="gallery__cell gallery__cell--tall js-gallery-cell">
+              <img src="media/342A3769.jpg" alt="36Soma Runners na treningu" width="1200" height="1800" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/342A3849.jpg" alt="Ekipa na stazi" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/342A3870.jpg" alt="Zajednički tempo" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell gallery__cell--wide js-gallery-cell">
+              <img src="media/Trka Kraljeva-Photo-ShadowHunter (211 of 1390).JPG" alt="Trka u Kraljevu" width="2000" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/54610814993_23e7d32cdf_o.jpg" alt="Trenutak sa trke ili treninga" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell gallery__cell--tall js-gallery-cell">
+              <img src="media/FK2A1173.JPG" alt="Trčanje" width="1200" height="1800" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/556477393_1365505102249197_7285480681888508783_n.jpg" alt="Druženje ekipe" width="1080" height="1080" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/342A4218.jpg" alt="Ekipa u pokretu" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell gallery__cell--wide js-gallery-cell">
+              <img src="media/Trka Kraljeva-Photo-ShadowHunter (26 of 1390).JPG" alt="Trka u Kraljevu — grupa" width="2000" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/54610912360_60e941aa44_o.jpg" alt="36Soma Runners" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/555752439_1365559292243778_5822336822088664470_n.jpg" alt="Ekipa" width="1080" height="1080" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell gallery__cell--tall js-gallery-cell">
+              <img src="media/FK2A0717.JPG" alt="Trening ili trka" width="1200" height="1800" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/FK2A1292.JPG" alt="U pokretu" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell gallery__cell--wide js-gallery-cell">
+              <img src="media/IMG_6212.JPG" alt="Događaj ili trening" width="2000" height="1200" loading="lazy" decoding="async" />
+            </li>
+            <li class="gallery__cell js-gallery-cell">
+              <img src="media/pp25-eh (1152).jpg" alt="Trčanje — ekipa" width="1200" height="1200" loading="lazy" decoding="async" />
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="marquee marquee--dark js-marquee" aria-hidden="true">
+        <div class="marquee__track">
+          <div class="marquee__chunk">
+            Kraljevo · zajednički tempo · zora i kafa posle · trka kad stignemo · 36Soma Runners ·
+          </div>
+          <div class="marquee__chunk">
+            Kraljevo · zajednički tempo · zora i kafa posle · trka kad stignemo · 36Soma Runners ·
+          </div>
+        </div>
+      </div>
+
+      <section id="priča" class="section section--story">
+        <div class="section__inner section--story__grid">
+          <div class="story__head">
+            <p class="story__eyebrow js-story-eyebrow">O klubu</p>
+            <h2 class="section__heading section__heading--xl js-section-title">Ko smo i zašto trčimo zajedno</h2>
+          </div>
+          <div class="story__body">
+            <p class="story__p story__p--big js-story-line">
+              36Soma Runners je running klub iz Kraljeva: okupljamo ljude koji žele da trče u grupi, redovno i bez pritiska da budu „najbrži u gradu“. Bitna je učestalost i međusno poštovanje, ne tablica rezultata.
+            </p>
+            <p class="story__p js-story-line">
+              Delimo rute, savete i šale na istim stazama u Kraljevu i okolini; ponekad izađemo na trku dalje od grada, a često ostane i druženje posle treninga — voda, istegnuće, dogovor za sledeći put. Ako tražiš ekipu koja drži tempo zajedništva, a ne ego, verovatno si na pravom mestu.
+            </p>
+          </div>
+          <blockquote class="manifest js-manifest">
+            <p class="manifest__line">Trčimo zajedno — u različitim tempima, u istom pravcu.</p>
+            <p class="manifest__line">Ozbiljni smo oko dogovora, ne oko merenja ko je „bolji“.</p>
+            <p class="manifest__line">Kad neko zakasni, čekamo. Kad neko odustane, pitamo da li treba pauza, ne sudimo.</p>
+            <p class="manifest__line manifest__line--kick">Dobri nam ljudi dolaze — to nam je bitnije od sekunde na satu.</p>
+          </blockquote>
+        </div>
+      </section>
+
+      <div class="marquee marquee--invert js-marquee-rev" aria-hidden="true">
+        <div class="marquee__track marquee__track--rev">
+          <div class="marquee__chunk">ISTA STAZA · DRUGAČIJI DAN · DUGI RUN KAD SE USKLADIMO · JOŠ JEDAN KRUG POSLE ·</div>
+          <div class="marquee__chunk">ISTA STAZA · DRUGAČIJI DAN · DUGI RUN KAD SE USKLADIMO · JOŠ JEDAN KRUG POSLE ·</div>
+        </div>
+      </div>
+
+      <section id="vibe" class="vibe" aria-label="Atmosfera kluba">
+        <div class="vibe__inner">
+          <p class="vibe__kicker js-vibe-kicker">Kako osećamo jedan trening</p>
+          <div class="vibe__stage">
+            <p class="vibe__slide js-vibe-slide" data-index="0">STAZA</p>
+            <p class="vibe__slide js-vibe-slide" data-index="1">RITAM</p>
+            <p class="vibe__slide js-vibe-slide" data-index="2">EKIPA</p>
+            <p class="vibe__slide js-vibe-slide" data-index="3">FINIŠ</p>
+          </div>
+          <p class="vibe__sub js-vibe-sub">
+            Prvo disanje i dogovor o ruti i tempu, pa zajednički kilometri. Na kraju ostane osećaj da si bio deo nečega — ne samo broj u aplikaciji.
+          </p>
+        </div>
+      </section>
+
+      <section id="kontakt" class="section section--cta">
+        <div class="section__inner cta">
+          <p class="story__eyebrow js-cta-eyebrow">Kontakt</p>
+          <h2 class="section__heading section__heading--xl js-section-title">Hoćeš da probaš?</h2>
+          <p class="cta__text js-cta-text">
+            Javi se na Instagramu, u WhatsApp grupi ili na Stravi — napiši pitanje ili samo kada možeš da dođeš na probni trening. Okupljanje je uvek na <strong>Gradskoj terasi</strong> u Kraljevu. Odgovaramo što pre i dogovaramo se bez komplikovanja.
+          </p>
+          <div class="cta__links">
+            <a
+              class="btn btn--magnetic magnetic js-cta-btn"
+              href="https://www.instagram.com/36soma.runners/"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-magnetic
+              aria-label="36Soma Runners na Instagramu"
+              >Instagram</a>
+            <a
+              class="btn btn--ghost btn--magnetic magnetic js-cta-btn"
+              href="https://chat.whatsapp.com/CSGPtzYS9Vm56dXSY45C2s"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-magnetic
+              aria-label="WhatsApp grupa 36Soma Runners"
+              >WhatsApp</a>
+            <a
+              class="btn btn--ghost btn--magnetic magnetic js-cta-btn"
+              href="https://strava.app.link/fEF18dZmS2b"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-magnetic
+              aria-label="36Soma Runners na Stravi"
+              >Strava</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__mega" aria-hidden="true">
+        <span>RUN</span><span>RUN</span><span>RUN</span><span>RUN</span><span>RUN</span>
+      </div>
+      <div class="site-footer__row">
+        <p>© <span id="year"></span> 36Soma Runners</p>
+        <p class="site-footer__tag">Kraljevo · u pokretu</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
