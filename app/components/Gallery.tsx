@@ -1,3 +1,4 @@
+import { sectionId } from "../lib/sections";
 import { SiteImage } from "./SiteImage";
 
 type GalleryLayout = "tile" | "wide" | "tall";
@@ -9,6 +10,8 @@ type GalleryImage = {
   w: number;
   h: number;
   layout: GalleryLayout;
+  /** Optional extra class(es), e.g. `gallery__cell--ivanjica` */
+  className?: string;
 };
 
 /** Paths in `DocumentaryStrip` excluded. Chaotic dense-grid mix — layouts follow native orientation where it helps. */
@@ -52,6 +55,7 @@ const images: GalleryImage[] = [
     w: 2000,
     h: 1200,
     layout: "wide",
+    className: "gallery__cell--center",
   },
   {
     src: "/media/B78A3234.webp",
@@ -92,6 +96,7 @@ const images: GalleryImage[] = [
     w: 2000,
     h: 1333,
     layout: "wide",
+    className: "gallery__cell--center",
   },
   {
     src: "/media/B78A2944.webp",
@@ -108,6 +113,7 @@ const images: GalleryImage[] = [
     w: 1600,
     h: 1066,
     layout: "tile",
+    className: "gallery__cell--center",
   },
   {
     src: "/media/342A3870.webp",
@@ -156,6 +162,7 @@ const images: GalleryImage[] = [
     w: 1200,
     h: 1200,
     layout: "tile",
+    className: "gallery__cell--top",
   },
   {
     src: "/media/54610814993_23e7d32cdf_o.webp",
@@ -173,6 +180,23 @@ const images: GalleryImage[] = [
     h: 1200,
     layout: "tile",
   },
+  
+  {
+    src: "/media/IMG_6219.webp",
+    altEn: "36Soma Runners on the route",
+    altSr: "36Soma Runners na stazi",
+    w: 2000,
+    h: 1335,
+    layout: "wide",
+  },
+  {
+    src: "/media/54610857900_1cb6c33c64_o.webp",
+    altEn: "Crew moment after the run",
+    altSr: "Trenutak ekipe posle trčanja",
+    w: 2000,
+    h: 1333,
+    layout: "tile",
+  },
   {
     src: "/media/342A4215.webp",
     altEn: "Running crew together",
@@ -180,6 +204,15 @@ const images: GalleryImage[] = [
     w: 2000,
     h: 1200,
     layout: "wide",
+  },
+  {
+    src: "/media/ivanjica.webp",
+    altEn: "Runners celebrating at the finish line in Ivanjica",
+    altSr: "Trkači slave na cilju u Ivanjici",
+    w: 1200,
+    h: 1200,
+    layout: "wide",
+    className: "gallery__cell--center",
   },
 ];
 
@@ -196,7 +229,7 @@ type GalleryProps = {
 export function Gallery({ locale = "en" }: GalleryProps) {
   const isSr = locale === "sr";
   return (
-    <section id="slike" className="section section--gallery">
+    <section id={sectionId(isSr ? "sr" : "en", "gallery")} className="section section--gallery">
       <div className="section__inner">
         <p className="story__eyebrow js-gallery-eyebrow">{isSr ? "Galerija" : "Gallery"}</p>
         <h2 className="section__heading section__heading--xl js-section-title">
@@ -209,7 +242,10 @@ export function Gallery({ locale = "en" }: GalleryProps) {
         </p>
         <ul className="gallery">
           {images.map((img) => (
-            <li key={img.src} className={layoutClass[img.layout]}>
+            <li
+              key={img.src}
+              className={[layoutClass[img.layout], img.className].filter(Boolean).join(" ")}
+            >
               <SiteImage
                 src={img.src}
                 alt={isSr ? img.altSr : img.altEn}

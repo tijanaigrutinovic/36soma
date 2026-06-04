@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { asset } from "../lib/asset";
+import { sectionHash } from "../lib/sections";
 
 type HeaderProps = {
   locale?: "en" | "sr";
@@ -13,6 +14,7 @@ export function Header({ locale = "en" }: HeaderProps) {
 
   const closeMenu = () => setMenuOpen(false);
   const isSr = locale === "sr";
+  const loc = isSr ? "sr" : "en";
   const base = isSr ? "/sr" : "";
 
   return (
@@ -35,10 +37,15 @@ export function Header({ locale = "en" }: HeaderProps) {
       </button>
 
       <nav id="main-nav" className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Main navigation">
-        <a href={`${base}/#top`} onClick={closeMenu}>{isSr ? "Početna" : "Home"}</a>
-        <a href={`${base}/#prica`} onClick={closeMenu}>{isSr ? "Priča" : "About"}</a>
-        <a href={`${base}/#slike`} onClick={closeMenu}>{isSr ? "Galerija" : "Gallery"}</a>
-        <a href={`${base}/#termini`} onClick={closeMenu}>{isSr ? "Treninzi" : "Training"}</a>
+        <a href={`${base}${sectionHash(loc, "story")}`} onClick={closeMenu}>
+          {isSr ? "Priča" : "About"}
+        </a>
+        <a href={`${base}${sectionHash(loc, "gallery")}`} onClick={closeMenu}>
+          {isSr ? "Galerija" : "Gallery"}
+        </a>
+        <a href={`${base}${sectionHash(loc, "training")}`} onClick={closeMenu}>
+          {isSr ? "Treninzi" : "Training"}
+        </a>
         <a href={`${base}/contact`} onClick={closeMenu}>{isSr ? "Kontakt" : "Contact"}</a>
         <div className="nav__lang">
           <a href={asset("/#top")} onClick={closeMenu} aria-label="Switch to English">EN</a>

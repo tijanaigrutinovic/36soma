@@ -11,6 +11,10 @@ export const metadata: Metadata = {
     "36Soma Runners — running collective from Kraljevo. Shared training sessions, race days, and community-first energy.",
 };
 
+const faviconDataUri = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" x="50%" text-anchor="middle" font-size="88">\u{1F407}</text></svg>`,
+)}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,6 +23,8 @@ export default function RootLayout({
   return (
     <html lang="sr" className="is-loading" data-scroll-behavior="smooth">
       <head>
+        <link rel="icon" href={faviconDataUri} type="image/svg+xml" />
+        <link rel="icon" href={asset("/favicon.svg")} type="image/svg+xml" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link

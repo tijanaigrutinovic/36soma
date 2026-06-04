@@ -1,11 +1,14 @@
 import { SiteImage } from "./SiteImage";
 
+import { sectionHash } from "../lib/sections";
+
 type HeroProps = {
   locale?: "en" | "sr";
 };
 
 export function Hero({ locale = "en" }: HeroProps) {
   const isSr = locale === "sr";
+  const loc = isSr ? "sr" : "en";
   return (
     <section id="top" className="hero hero--media" aria-labelledby="hero-title">
       <div className="hero__media" aria-hidden="true">
@@ -55,10 +58,10 @@ export function Hero({ locale = "en" }: HeroProps) {
             <span className="hero__stat-note">{isSr ? "ista ruta · različit ritam" : "same route · different pace"}</span>
           </div>
           <div className="hero__meta">
-            <a className="hero__scroll hero__scroll--primary js-reveal magnetic" href="#termini" data-magnetic>
+            <a className="hero__scroll hero__scroll--primary js-reveal magnetic" href={sectionHash(loc, "training")} data-magnetic>
               {isSr ? "Treninzi · raspored" : "Training · schedule"}
             </a>
-            <a className="hero__scroll js-reveal magnetic" href="#slike" data-magnetic>
+            <a className="hero__scroll js-reveal magnetic" href={sectionHash(loc, "gallery")} data-magnetic>
               {isSr ? "Galerija" : "Gallery"}
             </a>
           </div>

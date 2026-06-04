@@ -1,3 +1,5 @@
+import { sectionId } from "../lib/sections";
+
 type StoryProps = {
   locale?: "en" | "sr";
 };
@@ -5,7 +7,7 @@ type StoryProps = {
 export function Story({ locale = "en" }: StoryProps) {
   const isSr = locale === "sr";
   return (
-    <section id="prica" className="section section--story">
+    <section id={sectionId(isSr ? "sr" : "en", "story")} className="section section--story">
       <div className="section__inner section--story__grid">
         <div className="story__head">
           <p className="story__eyebrow js-story-eyebrow">{isSr ? "Priča" : "About"}</p>

@@ -1,3 +1,4 @@
+import { sectionId } from "../lib/sections";
 import { SiteImage } from "./SiteImage";
 
 type ContactCTAProps = {
@@ -10,7 +11,7 @@ export function ContactCTA({ locale = "en" }: ContactCTAProps) {
     ? "36Soma Runners na treningu u Kraljevu"
     : "36Soma Runners training together in Kraljevo";
   return (
-    <section id="kontakt" className="section section--cta">
+    <section id={sectionId(isSr ? "sr" : "en", "contact")} className="section section--cta">
       <div className="section__inner">
         <div className="cta">
           <div className="cta__layout">
