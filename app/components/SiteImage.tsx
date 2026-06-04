@@ -1,3 +1,5 @@
+import { asset } from "../lib/asset";
+
 type SiteImageProps = {
   src: string;
   alt: string;
@@ -22,7 +24,7 @@ export function SiteImage({
 }: SiteImageProps) {
   return (
     <img
-      src={src}
+      src={asset(src)}
       alt={alt}
       width={width}
       height={height}

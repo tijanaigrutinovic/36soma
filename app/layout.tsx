@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { asset } from "./lib/asset";
 import { CursorOverlay } from "./components/CursorOverlay";
 import { RouteAnimationSync } from "./components/RouteAnimationSync";
 import "./globals.css";
@@ -29,9 +30,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
           rel="stylesheet"
         />
-        <link rel="preload" as="image" href="/media/342A2254.webp" type="image/webp" />
-        <link rel="preload" as="image" href="/media/IMG_6212.webp" type="image/webp" />
-        <link rel="preload" as="image" href="/media/night-pace.webp" type="image/webp" />
+        <link rel="preload" as="image" href={asset("/media/342A2254.webp")} type="image/webp" />
+        <link rel="preload" as="image" href={asset("/media/IMG_6212.webp")} type="image/webp" />
+        <link rel="preload" as="image" href={asset("/media/night-pace.webp")} type="image/webp" />
       </head>
       <body suppressHydrationWarning>
         <CursorOverlay />
@@ -42,7 +43,7 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"
           strategy="beforeInteractive"
         />
-        <Script src="/main.js" strategy="afterInteractive" />
+        <Script src={asset("/main.js")} strategy="afterInteractive" />
       </body>
     </html>
   );

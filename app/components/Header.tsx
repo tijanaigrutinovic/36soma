@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { asset } from "../lib/asset";
 
 type HeaderProps = {
   locale?: "en" | "sr";
@@ -40,9 +41,9 @@ export function Header({ locale = "en" }: HeaderProps) {
         <a href={`${base}/#termini`} onClick={closeMenu}>{isSr ? "Treninzi" : "Training"}</a>
         <a href={`${base}/contact`} onClick={closeMenu}>{isSr ? "Kontakt" : "Contact"}</a>
         <div className="nav__lang">
-          <a href="/#top" onClick={closeMenu} aria-label="Switch to English">EN</a>
+          <a href={asset("/#top")} onClick={closeMenu} aria-label="Switch to English">EN</a>
           <span>/</span>
-          <a href="/sr/#top" onClick={closeMenu} aria-label="Prebaci na srpski">SR</a>
+          <a href={asset("/sr/#top")} onClick={closeMenu} aria-label="Prebaci na srpski">SR</a>
         </div>
       </nav>
     </header>
