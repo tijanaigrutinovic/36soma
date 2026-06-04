@@ -38,10 +38,6 @@ export function LoaderAndCursor() {
         </div>
       </div>
 
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
-
       <div className="cursor" id="cursor" aria-hidden="true" data-cursor>
         <span className="cursor__ring"></span>
         <span className="cursor__dot"></span>

@@ -32,11 +32,13 @@ export function Header({ locale = "en" }: HeaderProps) {
   const isSr = locale === "sr";
   const loc = isSr ? "sr" : "en";
   const base = isSr ? "/sr" : "";
+  /** Plain <a> tags need asset(); Next <Link> already applies basePath. */
   const page = (path: string) => asset(`${base}${path}`);
+  const homeHref = isSr ? "/sr/" : "/";
 
   return (
     <header className="site-header">
-      <Link className="logo" href={page("/")} aria-label="36Soma Runners — back to top">
+      <Link className="logo" href={homeHref} aria-label="36Soma Runners — back to top">
         <span className="logo__num">36</span><span className="logo__num-span">Soma Runners</span>
       </Link>
 
