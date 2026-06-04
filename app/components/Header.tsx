@@ -16,10 +16,11 @@ export function Header({ locale = "en" }: HeaderProps) {
   const isSr = locale === "sr";
   const loc = isSr ? "sr" : "en";
   const base = isSr ? "/sr" : "";
+  const page = (path: string) => asset(`${base}${path}`);
 
   return (
     <header className="site-header">
-      <Link className="logo" href={`${base}/#top`} aria-label="36Soma Runners — back to top">
+      <Link className="logo" href={page("/#top")} aria-label="36Soma Runners — back to top">
         <span className="logo__num">36</span><span className="logo__num-span">Soma Runners</span>
       </Link>
 
@@ -37,16 +38,18 @@ export function Header({ locale = "en" }: HeaderProps) {
       </button>
 
       <nav id="main-nav" className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Main navigation">
-        <a href={`${base}${sectionHash(loc, "story")}`} onClick={closeMenu}>
+        <a href={page(sectionHash(loc, "story"))} onClick={closeMenu}>
           {isSr ? "Priča" : "About"}
         </a>
-        <a href={`${base}${sectionHash(loc, "gallery")}`} onClick={closeMenu}>
+        <a href={page(sectionHash(loc, "gallery"))} onClick={closeMenu}>
           {isSr ? "Galerija" : "Gallery"}
         </a>
-        <a href={`${base}${sectionHash(loc, "training")}`} onClick={closeMenu}>
+        <a href={page(sectionHash(loc, "training"))} onClick={closeMenu}>
           {isSr ? "Treninzi" : "Training"}
         </a>
-        <a href={`${base}/contact`} onClick={closeMenu}>{isSr ? "Kontakt" : "Contact"}</a>
+        <a href={page("/contact/")} onClick={closeMenu}>
+          {isSr ? "Kontakt" : "Contact"}
+        </a>
         <div className="nav__lang">
           <a href={asset("/#top")} onClick={closeMenu} aria-label="Switch to English">EN</a>
           <span>/</span>
