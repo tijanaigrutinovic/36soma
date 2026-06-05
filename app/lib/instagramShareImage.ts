@@ -82,14 +82,9 @@ export async function buildInstagramStoryImage(
     const padX = 56;
     const padY = 40;
     const titleSize = 44;
-    const urlSize = 24;
-    const hintSize = 20;
     const titleFont = `700 ${titleSize}px Syne, system-ui, sans-serif`;
-    const urlFont = `500 ${urlSize}px "IBM Plex Sans", system-ui, sans-serif`;
-    const hintFont = `500 ${hintSize}px "IBM Plex Sans", system-ui, sans-serif`;
-    const brandFont = `700 ${urlSize}px Syne, system-ui, sans-serif`;
+    const brandFont = `700 ${titleSize}px Syne, system-ui, sans-serif`;
     const titleLineH = titleSize * 1.28;
-    const displayUrl = linkUrl.replace(/^https?:\/\//, "");
 
     ctx.fillStyle = "#ff5c00";
     ctx.fillRect(padX, panelTop, storyW - padX * 2, 3);
@@ -102,22 +97,10 @@ export async function buildInstagramStoryImage(
       ctx.fillText(line, padX, panelTop + padY + titleSize + i * titleLineH);
     });
 
-    ctx.fillStyle = "#b5b5b5";
-    ctx.font = urlFont;
-    ctx.fillText(displayUrl, padX, panelTop + padY + titleLines.length * titleLineH + titleSize + 20);
-
-    ctx.fillStyle = "#888888";
-    ctx.font = hintFont;
-    ctx.fillText(
-      locale === "sr" ? "Dodaj Link nalepnicu u Story-ju" : "Add Link sticker in Story",
-      padX,
-      storyH - 120,
-    );
-
     ctx.fillStyle = "#ff5c00";
     ctx.font = brandFont;
     ctx.textAlign = "right";
-    ctx.fillText("36Soma Runners", storyW - padX, storyH - 72);
+    ctx.fillText("36Soma Runners", storyW - padX, storyH - 200);
     ctx.textAlign = "left";
 
     const jpegBlob = await canvasToBlob(canvas, "image/jpeg", 0.92);

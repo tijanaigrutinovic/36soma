@@ -12,7 +12,7 @@ import {
   type InstagramStoryAssets,
 } from "../lib/instagramShareImage";
 import type { BlogLocale } from "../lib/blog";
-import { openSocialShare } from "../lib/socialShare";
+import { openSocialShare, type SocialPlatform } from "../lib/socialShare";
 
 type BlogShareProps = {
   title: string;
@@ -197,6 +197,21 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
     setStoryLoading(false);
   }, [image, locale, title, url]);
 
+  const shareNetwork = useCallback(
+    async (platform: SocialPlatform) => {
+      if (platform === "linkedin" && navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(`${title}\n\n${url}`);
+        } catch {
+          /* private mode */
+        }
+      }
+      openSocialShare(platform, url, title);
+      setOpen(false);
+    },
+    [title, url],
+  );
+
   const nativeShare = useCallback(async () => {
     if (!url || !navigator.share) return;
     try {
@@ -245,10 +260,7 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
               type="button"
               className="blog-share__item"
               role="menuitem"
-              onClick={() => {
-                openSocialShare(net.id, url, title);
-                setOpen(false);
-              }}
+              onClick={() => void shareNetwork(net.id)}
             >
               {net.label}
             </button>

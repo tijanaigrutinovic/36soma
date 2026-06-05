@@ -110,21 +110,23 @@ export function Header({ locale = "en" }: HeaderProps) {
       </div>
 
       <nav id="main-nav" className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Main navigation">
-        <a href={page(sectionHash(loc, "story"))} onClick={closeMenu}>
-          {isSr ? "Priča" : "About"}
-        </a>
-        <a href={page(sectionHash(loc, "gallery"))} onClick={closeMenu}>
-          {isSr ? "Galerija" : "Gallery"}
-        </a>
-        <a href={page(sectionHash(loc, "training"))} onClick={closeMenu}>
-          {isSr ? "Treninzi" : "Training"}
-        </a>
-        <Link href={isSr ? "/sr/blog/" : "/blog/"} onClick={closeMenu}>
-          {isSr ? "Blog" : "Blog"}
-        </Link>
-        <a href={page("/contact/")} onClick={closeMenu}>
-          {isSr ? "Kontakt" : "Contact"}
-        </a>
+        <div className="nav__links">
+          <a href={page(sectionHash(loc, "story"))} onClick={closeMenu}>
+            {isSr ? "Priča" : "About"}
+          </a>
+          <a href={page(sectionHash(loc, "gallery"))} onClick={closeMenu}>
+            {isSr ? "Galerija" : "Gallery"}
+          </a>
+          <a href={page(sectionHash(loc, "training"))} onClick={closeMenu}>
+            {isSr ? "Treninzi" : "Training"}
+          </a>
+          <Link href={isSr ? "/sr/blog/" : "/blog/"} onClick={closeMenu}>
+            {isSr ? "Blog" : "Blog"}
+          </Link>
+          <a href={page("/contact/")} onClick={closeMenu}>
+            {isSr ? "Kontakt" : "Contact"}
+          </a>
+        </div>
         <div className="nav__tools">
           <ThemeToggle locale={locale} className="theme-toggle--menu" />
           <div className="nav__lang">
