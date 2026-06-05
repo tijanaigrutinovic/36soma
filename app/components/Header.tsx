@@ -1,44 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { blogPostHref } from "../lib/blog";
 import { asset } from "../lib/asset";
+import { localeSwitchTargets, normalizePathname } from "../lib/locale";
 import { sectionHash } from "../lib/sections";
 import { ThemeToggle } from "./ThemeToggle";
-
-function localeSwitchTargets(pathname: string): { en: string; sr: string } {
-  const path = pathname.replace(/\/$/, "") || "/";
-
-  if (path === "/contact") {
-    return { en: "/contact/", sr: "/sr/contact/" };
-  }
-  if (path === "/sr/contact") {
-    return { en: "/contact/", sr: "/sr/contact/" };
-  }
-
-  if (path === "/blog" || path.startsWith("/blog/")) {
-    const slug = path.replace(/^\/blog\/?/, "");
-    return slug
-      ? { en: `/blog/${slug}/`, sr: `/sr/blog/${slug}/` }
-      : { en: "/blog/", sr: "/sr/blog/" };
-  }
-  if (path === "/sr/blog" || path.startsWith("/sr/blog/")) {
-    const slug = path.replace(/^\/sr\/blog\/?/, "");
-    return slug
-      ? { en: `/blog/${slug}/`, sr: `/sr/blog/${slug}/` }
-      : { en: "/blog/", sr: "/sr/blog/" };
-  }
-
-  return { en: "/", sr: "/sr/" };
-}
 
 type HeaderProps = {
   locale?: "en" | "sr";
 };
 
 function isHomePath(pathname: string | null): boolean {
-  const path = (pathname ?? "/").replace(/\/$/, "") || "/";
+  const path = normalizePathname(pathname ?? "/");
   return path === "/" || path === "/sr";
 }
 
@@ -47,6 +22,7 @@ export function Header({ locale = "en" }: HeaderProps) {
   const pathname = usePathname();
   const isHome = isHomePath(pathname);
   const [overHero, setOverHero] = useState(isHome);
+  const isSr = locale === "sr";
   const lang = localeSwitchTargets(pathname ?? "/");
 
   useEffect(() => {
@@ -78,20 +54,17 @@ export function Header({ locale = "en" }: HeaderProps) {
   }, [isHome]);
 
   const closeMenu = () => setMenuOpen(false);
-  const isSr = locale === "sr";
-  const loc = isSr ? "sr" : "en";
+  const loc = locale;
   const base = isSr ? "/sr" : "";
   /** Plain <a> tags need asset(); Next <Link> already applies basePath. */
   const page = (path: string) => asset(`${base}${path}`);
-  const homeHref = isSr ? "/sr/" : "/";
-
   return (
     <header
       className={`site-header ${isHome && overHero ? "site-header--over-hero" : "site-header--solid"}`}
     >
-      <Link className="logo" href={homeHref} aria-label="36Soma Runners — back to top">
+      <a className="logo" href={asset(isSr ? "/sr/" : "/")} aria-label="36Soma Runners — back to top">
         <span className="logo__num">36</span><span className="logo__num-span">Soma Runners</span>
-      </Link>
+      </a>
 
       <div className="site-header__actions">
         <ThemeToggle locale={locale} className="theme-toggle--bar" />
@@ -120,9 +93,9 @@ export function Header({ locale = "en" }: HeaderProps) {
           <a href={page(sectionHash(loc, "training"))} onClick={closeMenu}>
             {isSr ? "Treninzi" : "Training"}
           </a>
-          <Link href={isSr ? "/sr/blog/" : "/blog/"} onClick={closeMenu}>
-            {isSr ? "Blog" : "Blog"}
-          </Link>
+          <a href={blogPostHref(locale)} onClick={closeMenu}>
+            Blog
+          </a>
           <a href={page("/contact/")} onClick={closeMenu}>
             {isSr ? "Kontakt" : "Contact"}
           </a>

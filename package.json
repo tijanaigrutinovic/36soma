@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:pages": "GITHUB_PAGES=true NEXT_PUBLIC_BASE_PATH=/36soma next build",
+    "build:pages": "GITHUB_PAGES=true next build",
     "start": "next start",
     "lint": "eslint .",
     "optimize:images": "node scripts/optimize-media.mjs"

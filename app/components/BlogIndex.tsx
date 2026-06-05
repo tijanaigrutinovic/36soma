@@ -1,7 +1,6 @@
-import Link from "next/link";
 import {
   BLOG_TAGS,
-  blogPostPath,
+  blogPostHref,
   formatBlogDate,
   getBlogPosts,
   type BlogLocale,
@@ -40,7 +39,7 @@ export function BlogIndex({ locale = "en" }: BlogIndexProps) {
             <li key={post.slug} className="blog__card">
               <article>
                 {(post.imageCover ?? post.image) ? (
-                  <Link href={blogPostPath(locale, post.slug)} className="blog__card-media">
+                  <a href={blogPostHref(locale, post.slug)} className="blog__card-media">
                     <SiteImage
                       src={post.imageCover ?? post.image!}
                       alt=""
@@ -49,14 +48,14 @@ export function BlogIndex({ locale = "en" }: BlogIndexProps) {
                       loading="lazy"
                       decoding="async"
                     />
-                  </Link>
+                  </a>
                 ) : null}
                 <div className="blog__card-body">
                   <time className="blog__date" dateTime={post.date}>
                     {formatBlogDate(post.date, locale)}
                   </time>
                   <h2 className="blog__card-title">
-                    <Link href={blogPostPath(locale, post.slug)}>{post.title[locale]}</Link>
+                    <a href={blogPostHref(locale, post.slug)}>{post.title[locale]}</a>
                   </h2>
                   <p className="blog__excerpt">{post.excerpt[locale]}</p>
                   <ul className="blog__tags" aria-label={isSr ? "Oznake" : "Tags"}>
@@ -66,9 +65,9 @@ export function BlogIndex({ locale = "en" }: BlogIndexProps) {
                       </li>
                     ))}
                   </ul>
-                  <Link href={blogPostPath(locale, post.slug)} className="blog__read-more">
+                  <a href={blogPostHref(locale, post.slug)} className="blog__read-more">
                     {isSr ? "Pročitaj →" : "Read more →"}
-                  </Link>
+                  </a>
                 </div>
               </article>
             </li>

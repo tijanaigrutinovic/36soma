@@ -22,10 +22,20 @@ export function getBlogPostMetadata(post: BlogPost, locale: BlogLocale): Metadat
   const imagePath = post.image ?? post.imageCover;
   const ogImage = imagePath ? absoluteAsset(imagePath) : undefined;
 
+  const enUrl = getBlogPostUrl(post.slug, "en");
+  const srUrl = getBlogPostUrl(post.slug, "sr");
+
   return {
     title: `${title} | 36Soma Runners`,
     description,
-    alternates: { canonical: pageUrl },
+    alternates: {
+      canonical: pageUrl,
+      languages: {
+        en: enUrl,
+        sr: srUrl,
+        "x-default": enUrl,
+      },
+    },
     openGraph: {
       type: "article",
       locale: locale === "sr" ? "sr_RS" : "en_US",

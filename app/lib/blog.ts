@@ -1,3 +1,5 @@
+import { asset } from "./asset";
+
 export type BlogLocale = "en" | "sr";
 
 export type BlogTagId =
@@ -499,6 +501,11 @@ export function getAllBlogSlugs(): string[] {
 export function blogPostPath(locale: BlogLocale, slug?: string): string {
   const base = locale === "sr" ? "/sr/blog" : "/blog";
   return slug ? `${base}/${slug}/` : `${base}/`;
+}
+
+/** Absolute site path for blog links (includes GitHub Pages basePath when set). */
+export function blogPostHref(locale: BlogLocale, slug?: string): string {
+  return asset(blogPostPath(locale, slug));
 }
 
 const SR_MONTHS_LATIN = [

@@ -1,7 +1,6 @@
-import Link from "next/link";
 import {
   BLOG_TAGS,
-  blogPostPath,
+  blogPostHref,
   formatBlogDate,
   type BlogLocale,
   type BlogPost,
@@ -22,9 +21,9 @@ export function BlogPostView({ post, locale = "en" }: BlogPostViewProps) {
       <div className="section__inner blog-post__inner">
         <header className="blog-post__meta">
           <div className="blog-post__meta-start">
-            <Link href={blogPostPath(locale)} className="blog-post__back">
+            <a href={blogPostHref(locale)} className="blog-post__back">
               {isSr ? "← Nazad na blog" : "← Back to blog"}
-            </Link>
+            </a>
             <time className="blog-post__date" dateTime={post.date}>
               {formatBlogDate(post.date, locale)}
             </time>
@@ -96,6 +95,12 @@ export function BlogPostView({ post, locale = "en" }: BlogPostViewProps) {
             );
           })}
         </div>
+        <p className="blog-post__alt-locale">
+          <a href={blogPostHref(isSr ? "en" : "sr", post.slug)}>
+            {isSr ? "Read in English →" : "Pročitaj na srpskom →"}
+          </a>
+        </p>
+
         <p className="blog-post__follow cta__text">
           {isSr ? (
             <>

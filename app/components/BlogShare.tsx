@@ -115,7 +115,7 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
 
   useEffect(() => {
     setUrl(window.location.href);
-    setCanNativeShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+    setCanNativeShare(typeof navigator.share === "function");
   }, []);
 
   useEffect(() => {

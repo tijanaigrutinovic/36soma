@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { asset } from "./lib/asset";
 import { CursorOverlay } from "./components/CursorOverlay";
+import { LocaleLangSync } from "./components/LocaleLangSync";
 import { RouteAnimationSync } from "./components/RouteAnimationSync";
 import { ThemeScript } from "./components/ThemeScript";
 import "./globals.css";
@@ -23,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="sr"
+      lang="en"
       className="is-loading"
       data-scroll-behavior="smooth"
       data-theme="dark"
@@ -50,6 +51,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <CursorOverlay />
+        <LocaleLangSync />
         <RouteAnimationSync />
         {children}
         <Script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" strategy="beforeInteractive" />
