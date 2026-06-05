@@ -1,9 +1,12 @@
+import QRCode from "qrcode";
 import { asset } from "./asset";
 
 export type InstagramStoryAssets = {
   file: File;
   pngBlob: Blob;
 };
+
+type StoryLocale = "en" | "sr";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -44,11 +47,64 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number)
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
 }
 
+function drawRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number,
+) {
+  const r = Math.min(radius, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+async function drawStoryQr(
+  ctx: CanvasRenderingContext2D,
+  linkUrl: string,
+  locale: StoryLocale,
+  x: number,
+  y: number,
+) {
+  const qrSize = 132;
+  const qrPadding = 14;
+  const labelSize = 18;
+  const labelGap = 10;
+  const boxW = qrSize + qrPadding * 2;
+  const boxH = boxW + labelGap + labelSize;
+
+  const qrDataUrl = await QRCode.toDataURL(linkUrl, {
+    margin: 0,
+    width: qrSize,
+    color: { dark: "#0a0a0a", light: "#ffffff" },
+  });
+  const qrImg = await loadImage(qrDataUrl);
+
+  drawRoundedRect(ctx, x, y, boxW, boxH, 14);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+
+  ctx.drawImage(qrImg, x + qrPadding, y + qrPadding, qrSize, qrSize);
+
+  ctx.fillStyle = "#0a0a0a";
+  ctx.font = `600 ${labelSize}px "IBM Plex Sans", system-ui, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillText(locale === "sr" ? "Skeniraj link" : "Scan for link", x + boxW / 2, y + boxW + labelGap + labelSize - 4);
+  ctx.textAlign = "left";
+}
+
 export async function buildInstagramStoryImage(
   imagePath: string,
   pageUrl: string,
   title: string,
   linkUrl: string,
+  locale: StoryLocale = "en",
 ): Promise<InstagramStoryAssets | null> {
   try {
     const imageUrl = new URL(asset(imagePath), pageUrl).href;
@@ -101,6 +157,8 @@ export async function buildInstagramStoryImage(
     ctx.font = urlFont;
     ctx.fillText(displayUrl, padX, panelTop + padY + titleLines.length * titleLineH + titleSize + 20);
 
+    await drawStoryQr(ctx, linkUrl, locale, padX, storyH - 300);
+
     ctx.fillStyle = "#ff5c00";
     ctx.font = brandFont;
     ctx.textAlign = "right";
@@ -123,6 +181,16 @@ export async function buildInstagramStoryImage(
   }
 }
 
+export async function copyPostLink(url: string): Promise<boolean> {
+  if (!navigator.clipboard?.writeText) return false;
+  try {
+    await navigator.clipboard.writeText(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function copyImageBlobToClipboard(pngBlob: Blob): Promise<boolean> {
   if (!navigator.clipboard?.write) return false;
   try {
@@ -133,15 +201,34 @@ export async function copyImageBlobToClipboard(pngBlob: Blob): Promise<boolean> 
   }
 }
 
-export async function shareImageFile(file: File): Promise<"shared" | "aborted" | "failed"> {
+export async function shareImageFile(
+  file: File,
+  meta?: { title?: string; url?: string },
+): Promise<"shared" | "aborted" | "failed"> {
   if (!navigator.share) return "failed";
 
+  const withMeta: ShareData = {
+    files: [file],
+    ...(meta?.title ? { title: meta.title } : {}),
+    ...(meta?.url ? { url: meta.url, text: meta.url } : {}),
+  };
+
   try {
+    if (!navigator.canShare || navigator.canShare(withMeta)) {
+      await navigator.share(withMeta);
+      return "shared";
+    }
     await navigator.share({ files: [file] });
     return "shared";
   } catch (err) {
     if ((err as Error).name === "AbortError") return "aborted";
-    return "failed";
+    try {
+      await navigator.share({ files: [file] });
+      return "shared";
+    } catch (retryErr) {
+      if ((retryErr as Error).name === "AbortError") return "aborted";
+      return "failed";
+    }
   }
 }
 

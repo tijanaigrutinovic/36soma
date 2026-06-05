@@ -4,11 +4,13 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   buildInstagramStoryImage,
   copyImageBlobToClipboard,
+  copyPostLink,
   isMobileDevice,
   openInstagramApp,
   shareImageFile,
 } from "../lib/instagramShareImage";
 import type { BlogLocale } from "../lib/blog";
+import { openSocialShare } from "../lib/socialShare";
 
 type BlogShareProps = {
   title: string;
@@ -29,9 +31,11 @@ const copy = {
     whatsapp: "WhatsApp",
     instagram: "Instagram Story",
     instagramHint: "Share as Instagram Story",
-    instagramPickStory: "Pick Instagram, then Story in the share menu.",
+    instagramPickStory: "Pick Instagram, then Story. Link is copied — add Link sticker and paste.",
     instagramPaste:
-      "Image copied — open Instagram Story and paste (long-press on the canvas).",
+      "Image copied — paste in Story. Link is copied for the Link sticker; QR on image opens the post.",
+    instagramLinkReady:
+      "Link copied — in Story add Link sticker and paste. Viewers can also scan the QR on the image.",
     instagramDesktop: "Instagram Story works on your phone — open this post on mobile and tap Share.",
     instagramFailed: "Could not open share — try again in Safari or Chrome on your phone.",
   },
@@ -47,33 +51,16 @@ const copy = {
     whatsapp: "WhatsApp",
     instagram: "Instagram Story",
     instagramHint: "Podeli kao Instagram Story",
-    instagramPickStory: "Izaberi Instagram, pa Story u meniju za deljenje.",
+    instagramPickStory: "Izaberi Instagram, pa Story. Link je kopiran — dodaj Link nalepnicu i nalepi.",
     instagramPaste:
-      "Slika je kopirana — otvori Instagram Story i nalepi (dugi pritisak na ekran).",
+      "Slika je kopirana — nalepi u Story. Link je kopiran za Link nalepnicu; QR na slici vodi na tekst.",
+    instagramLinkReady:
+      "Link je kopiran — u Story-ju dodaj Link nalepnicu i nalepi. QR na slici vodi direktno na tekst.",
     instagramDesktop:
       "Instagram Story radi sa telefona — otvori ovaj tekst na mobilnom i klikni Podeli.",
     instagramFailed: "Deljenje nije uspelo — probaj ponovo u Safariju ili Chrome-u na telefonu.",
   },
 } as const;
-
-function shareUrl(platform: string, url: string, title: string): string {
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
-  const encodedBoth = encodeURIComponent(`${title} ${url}`);
-
-  switch (platform) {
-    case "x":
-      return `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
-    case "facebook":
-      return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
-    case "linkedin":
-      return `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-    case "whatsapp":
-      return `https://wa.me/?text=${encodedBoth}`;
-    default:
-      return url;
-  }
-}
 
 export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
   const t = locale === "sr" ? copy.sr : copy.en;
@@ -136,16 +123,17 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
       return;
     }
 
-    const assets = await buildInstagramStoryImage(image, url, title, url);
+    const assets = await buildInstagramStoryImage(image, url, title, url, locale);
     if (!assets) {
       showStatus(t.instagramFailed);
       return;
     }
 
-    const shareResult = await shareImageFile(assets.file);
+    await copyPostLink(url);
+
+    const shareResult = await shareImageFile(assets.file, { title, url });
     if (shareResult === "shared") {
-      setOpen(false);
-      setStatus(null);
+      showStatus(t.instagramLinkReady);
       return;
     }
     if (shareResult === "aborted") {
@@ -155,13 +143,26 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
 
     const pasted = await copyImageBlobToClipboard(assets.pngBlob);
     if (pasted) {
+      await copyPostLink(url);
       openInstagramApp();
       showStatus(t.instagramPaste);
       return;
     }
 
+    await copyPostLink(url);
     showStatus(t.instagramPickStory);
-  }, [image, showStatus, t.instagramDesktop, t.instagramFailed, t.instagramPaste, t.instagramPickStory, title, url]);
+  }, [
+    image,
+    locale,
+    showStatus,
+    t.instagramDesktop,
+    t.instagramFailed,
+    t.instagramLinkReady,
+    t.instagramPaste,
+    t.instagramPickStory,
+    title,
+    url,
+  ]);
 
   const nativeShare = useCallback(async () => {
     if (!url || !navigator.share) return;
@@ -210,17 +211,18 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
             </button>
           ) : null}
           {networks.map((net) => (
-            <a
+            <button
               key={net.id}
+              type="button"
               className="blog-share__item"
               role="menuitem"
-              href={shareUrl(net.id, url, title)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                openSocialShare(net.id, url, title);
+                setOpen(false);
+              }}
             >
               {net.label}
-            </a>
+            </button>
           ))}
           {image ? (
             <button
