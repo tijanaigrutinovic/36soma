@@ -1,9 +1,8 @@
-import QRCode from "qrcode";
 import { asset } from "./asset";
 
 export type InstagramStoryAssets = {
   file: File;
-  pngBlob: Blob;
+  previewUrl: string;
 };
 
 type StoryLocale = "en" | "sr";
@@ -47,58 +46,6 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number)
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
 }
 
-function drawRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  radius: number,
-) {
-  const r = Math.min(radius, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-async function drawStoryQr(
-  ctx: CanvasRenderingContext2D,
-  linkUrl: string,
-  locale: StoryLocale,
-  x: number,
-  y: number,
-) {
-  const qrSize = 132;
-  const qrPadding = 14;
-  const labelSize = 18;
-  const labelGap = 10;
-  const boxW = qrSize + qrPadding * 2;
-  const boxH = boxW + labelGap + labelSize;
-
-  const qrDataUrl = await QRCode.toDataURL(linkUrl, {
-    margin: 0,
-    width: qrSize,
-    color: { dark: "#0a0a0a", light: "#ffffff" },
-  });
-  const qrImg = await loadImage(qrDataUrl);
-
-  drawRoundedRect(ctx, x, y, boxW, boxH, 14);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
-
-  ctx.drawImage(qrImg, x + qrPadding, y + qrPadding, qrSize, qrSize);
-
-  ctx.fillStyle = "#0a0a0a";
-  ctx.font = `600 ${labelSize}px "IBM Plex Sans", system-ui, sans-serif`;
-  ctx.textAlign = "center";
-  ctx.fillText(locale === "sr" ? "Skeniraj link" : "Scan for link", x + boxW / 2, y + boxW + labelGap + labelSize - 4);
-  ctx.textAlign = "left";
-}
-
 export async function buildInstagramStoryImage(
   imagePath: string,
   pageUrl: string,
@@ -136,16 +83,18 @@ export async function buildInstagramStoryImage(
     const padY = 40;
     const titleSize = 44;
     const urlSize = 24;
+    const hintSize = 20;
     const titleFont = `700 ${titleSize}px Syne, system-ui, sans-serif`;
     const urlFont = `500 ${urlSize}px "IBM Plex Sans", system-ui, sans-serif`;
+    const hintFont = `500 ${hintSize}px "IBM Plex Sans", system-ui, sans-serif`;
     const brandFont = `700 ${urlSize}px Syne, system-ui, sans-serif`;
     const titleLineH = titleSize * 1.28;
+    const displayUrl = linkUrl.replace(/^https?:\/\//, "");
 
     ctx.fillStyle = "#ff5c00";
     ctx.fillRect(padX, panelTop, storyW - padX * 2, 3);
 
     const titleLines = wrapText(ctx, title, storyW - padX * 2, titleFont, 3);
-    const displayUrl = linkUrl.replace(/^https?:\/\//, "");
 
     ctx.fillStyle = "#f5f5f5";
     ctx.font = titleFont;
@@ -157,7 +106,13 @@ export async function buildInstagramStoryImage(
     ctx.font = urlFont;
     ctx.fillText(displayUrl, padX, panelTop + padY + titleLines.length * titleLineH + titleSize + 20);
 
-    await drawStoryQr(ctx, linkUrl, locale, padX, storyH - 300);
+    ctx.fillStyle = "#888888";
+    ctx.font = hintFont;
+    ctx.fillText(
+      locale === "sr" ? "Dodaj Link nalepnicu u Story-ju" : "Add Link sticker in Story",
+      padX,
+      storyH - 120,
+    );
 
     ctx.fillStyle = "#ff5c00";
     ctx.font = brandFont;
@@ -165,20 +120,30 @@ export async function buildInstagramStoryImage(
     ctx.fillText("36Soma Runners", storyW - padX, storyH - 72);
     ctx.textAlign = "left";
 
-    const [jpegBlob, pngBlob] = await Promise.all([
-      canvasToBlob(canvas, "image/jpeg", 0.92),
-      canvasToBlob(canvas, "image/png"),
-    ]);
+    const jpegBlob = await canvasToBlob(canvas, "image/jpeg", 0.92);
+    if (!jpegBlob) return null;
 
-    if (!jpegBlob || !pngBlob) return null;
-
+    const file = new File([jpegBlob], "36soma-story.jpg", { type: "image/jpeg" });
     return {
-      file: new File([jpegBlob], "36soma-story.jpg", { type: "image/jpeg" }),
-      pngBlob,
+      file,
+      previewUrl: URL.createObjectURL(file),
     };
   } catch {
     return null;
   }
+}
+
+export function revokeStoryPreview(assets: InstagramStoryAssets | null) {
+  if (assets?.previewUrl) URL.revokeObjectURL(assets.previewUrl);
+}
+
+export function downloadStoryImage(file: File) {
+  const url = URL.createObjectURL(file);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = file.name;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 export async function copyPostLink(url: string): Promise<boolean> {
@@ -191,54 +156,10 @@ export async function copyPostLink(url: string): Promise<boolean> {
   }
 }
 
-export async function copyImageBlobToClipboard(pngBlob: Blob): Promise<boolean> {
-  if (!navigator.clipboard?.write) return false;
-  try {
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function shareImageFile(
-  file: File,
-  meta?: { title?: string; url?: string },
-): Promise<"shared" | "aborted" | "failed"> {
-  if (!navigator.share) return "failed";
-
-  const withMeta: ShareData = {
-    files: [file],
-    ...(meta?.title ? { title: meta.title } : {}),
-    ...(meta?.url ? { url: meta.url, text: meta.url } : {}),
-  };
-
-  try {
-    if (!navigator.canShare || navigator.canShare(withMeta)) {
-      await navigator.share(withMeta);
-      return "shared";
-    }
-    await navigator.share({ files: [file] });
-    return "shared";
-  } catch (err) {
-    if ((err as Error).name === "AbortError") return "aborted";
-    try {
-      await navigator.share({ files: [file] });
-      return "shared";
-    } catch (retryErr) {
-      if ((retryErr as Error).name === "AbortError") return "aborted";
-      return "failed";
-    }
-  }
-}
-
 export function openInstagramApp() {
   const ua = navigator.userAgent;
   if (/iPhone|iPad|iPod/i.test(ua)) {
     window.location.href = "instagram://story-camera";
-    window.setTimeout(() => {
-      window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-    }, 700);
     return;
   }
   if (/Android/i.test(ua)) {

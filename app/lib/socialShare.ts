@@ -20,6 +20,11 @@ function buildPayload(url: string, title: string): SharePayload {
   };
 }
 
+function getLinkedInShareUrl(url: string, title: string): string {
+  const text = encodeURIComponent(`${title}\n\n${url}`);
+  return `https://www.linkedin.com/feed/?shareActive&mini=true&text=${text}`;
+}
+
 export function getSocialShareWebUrl(platform: SocialPlatform, url: string, title: string): string {
   const p = buildPayload(url, title);
 
@@ -29,7 +34,7 @@ export function getSocialShareWebUrl(platform: SocialPlatform, url: string, titl
     case "facebook":
       return `https://www.facebook.com/sharer/sharer.php?u=${p.encodedUrl}`;
     case "linkedin":
-      return `https://www.linkedin.com/sharing/share-offsite/?url=${p.encodedUrl}`;
+      return getLinkedInShareUrl(url, title);
     case "whatsapp":
       return `https://wa.me/?text=${p.encodedBoth}`;
     default:
@@ -60,10 +65,7 @@ function getAppShareUrls(platform: SocialPlatform, p: SharePayload, ua: string):
           `twitter://post?message=${p.encodedMessage}`,
         ];
       case "linkedin":
-        return [
-          `linkedin://sharing/share-offsite/?url=${p.encodedUrl}`,
-          `linkedin://shareArticle?mini=true&url=${p.encodedUrl}&title=${p.encodedTitle}`,
-        ];
+        return [];
       case "facebook":
         return [`fb://share/?link=${p.encodedUrl}`];
       default:
@@ -83,9 +85,7 @@ function getAppShareUrls(platform: SocialPlatform, p: SharePayload, ua: string):
           `intent://twitter.com/intent/tweet?text=${p.encodedMessage}#Intent;package=com.twitter.android;scheme=https;S.browser_fallback_url=${fallback};end`,
         ];
       case "linkedin":
-        return [
-          `intent://www.linkedin.com/sharing/share-offsite/?url=${p.encodedUrl}#Intent;package=com.linkedin.android;scheme=https;S.browser_fallback_url=${fallback};end`,
-        ];
+        return [];
       case "facebook":
         return [
           `intent://www.facebook.com/sharer/sharer.php?u=${p.encodedUrl}#Intent;package=com.facebook.katana;scheme=https;S.browser_fallback_url=${fallback};end`,
@@ -140,11 +140,27 @@ function tryAppUrls(appUrls: string[], webFallback: () => void) {
   tryNext();
 }
 
+function openLinkedInShare(url: string, title: string, mobile: boolean) {
+  const shareUrl = getLinkedInShareUrl(url, title);
+  if (mobile) {
+    window.location.assign(shareUrl);
+    return;
+  }
+  window.open(shareUrl, "_blank", "noopener,noreferrer");
+}
+
 export function openSocialShare(platform: SocialPlatform, url: string, title: string) {
   if (!url || typeof window === "undefined") return;
 
   const ua = navigator.userAgent;
-  if (!isMobileUserAgent(ua)) {
+  const mobile = isMobileUserAgent(ua);
+
+  if (platform === "linkedin") {
+    openLinkedInShare(url, title, mobile);
+    return;
+  }
+
+  if (!mobile) {
     openWebShare(platform, url, title);
     return;
   }

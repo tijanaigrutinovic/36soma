@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   buildInstagramStoryImage,
-  copyImageBlobToClipboard,
   copyPostLink,
+  downloadStoryImage,
   isMobileDevice,
   openInstagramApp,
-  shareImageFile,
+  revokeStoryPreview,
+  type InstagramStoryAssets,
 } from "../lib/instagramShareImage";
 import type { BlogLocale } from "../lib/blog";
 import { openSocialShare } from "../lib/socialShare";
@@ -30,14 +31,19 @@ const copy = {
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     instagram: "Instagram Story",
-    instagramHint: "Share as Instagram Story",
-    instagramPickStory: "Pick Instagram, then Story. Link is copied — add Link sticker and paste.",
-    instagramPaste:
-      "Image copied — paste in Story. Link is copied for the Link sticker; QR on image opens the post.",
-    instagramLinkReady:
-      "Link copied — in Story add Link sticker and paste. Viewers can also scan the QR on the image.",
-    instagramDesktop: "Instagram Story works on your phone — open this post on mobile and tap Share.",
-    instagramFailed: "Could not open share — try again in Safari or Chrome on your phone.",
+    instagramHint: "Create Instagram Story image",
+    instagramFailed: "Could not create story image — try again.",
+    storyTitle: "Instagram Story",
+    storyClose: "Close",
+    storyGenerating: "Creating story image…",
+    storyStep1: "Download the story image",
+    storyStep2: "Post it on your Instagram Story",
+    storyStep3: "Add Link sticker and paste the link below",
+    storyLinkSticker: "Link sticker",
+    storyDownload: "Download image",
+    storyOpenIg: "Open Instagram",
+    storyLinkCopied: "Link copied — paste into Link sticker",
+    storyCopyLink: "Copy link again",
   },
   sr: {
     share: "Podeli",
@@ -50,27 +56,44 @@ const copy = {
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     instagram: "Instagram Story",
-    instagramHint: "Podeli kao Instagram Story",
-    instagramPickStory: "Izaberi Instagram, pa Story. Link je kopiran — dodaj Link nalepnicu i nalepi.",
-    instagramPaste:
-      "Slika je kopirana — nalepi u Story. Link je kopiran za Link nalepnicu; QR na slici vodi na tekst.",
-    instagramLinkReady:
-      "Link je kopiran — u Story-ju dodaj Link nalepnicu i nalepi. QR na slici vodi direktno na tekst.",
-    instagramDesktop:
-      "Instagram Story radi sa telefona — otvori ovaj tekst na mobilnom i klikni Podeli.",
-    instagramFailed: "Deljenje nije uspelo — probaj ponovo u Safariju ili Chrome-u na telefonu.",
+    instagramHint: "Napravi Instagram Story sliku",
+    instagramFailed: "Slika nije kreirana — probaj ponovo.",
+    storyTitle: "Instagram Story",
+    storyClose: "Zatvori",
+    storyGenerating: "Pravim story sliku…",
+    storyStep1: "Preuzmi story sliku",
+    storyStep2: "Postavi je na Instagram Story",
+    storyStep3: "Dodaj Link nalepnicu i nalepi link ispod",
+    storyLinkSticker: "Link nalepnica",
+    storyDownload: "Preuzmi sliku",
+    storyOpenIg: "Otvori Instagram",
+    storyLinkCopied: "Link je kopiran — nalepi u Link nalepnicu",
+    storyCopyLink: "Kopiraj link ponovo",
   },
 } as const;
 
 export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
   const t = locale === "sr" ? copy.sr : copy.en;
   const menuId = useId();
+  const storyDialogId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
+  const [storyLoading, setStoryLoading] = useState(false);
+  const [storyAssets, setStoryAssets] = useState<InstagramStoryAssets | null>(null);
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
+
+  const closeStoryPanel = useCallback(() => {
+    setStoryOpen(false);
+    setStoryAssets((prev) => {
+      revokeStoryPreview(prev);
+      return null;
+    });
+    setLinkCopied(false);
+  }, []);
 
   useEffect(() => {
     setUrl(window.location.href);
@@ -78,7 +101,7 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !storyOpen) return;
 
     const onPointerDown = (event: MouseEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
@@ -87,7 +110,10 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        closeStoryPanel();
+      }
     };
 
     document.addEventListener("mousedown", onPointerDown);
@@ -96,73 +122,53 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
       document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [open]);
+  }, [closeStoryPanel, open, storyOpen]);
 
-  const showStatus = useCallback((message: string) => {
-    setStatus(message);
-    setOpen(false);
-    window.setTimeout(() => setStatus(null), 6000);
-  }, []);
+  useEffect(() => {
+    return () => revokeStoryPreview(storyAssets);
+  }, [storyAssets]);
 
   const copyLink = useCallback(async () => {
     if (!url) return;
-    try {
-      await navigator.clipboard.writeText(url);
+    const ok = await copyPostLink(url);
+    if (ok) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* private mode */
     }
   }, [url]);
 
-  const shareInstagram = useCallback(async () => {
+  const copyStoryLink = useCallback(async () => {
+    if (!url) return;
+    const ok = await copyPostLink(url);
+    if (ok) {
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2500);
+    }
+  }, [url]);
+
+  const openInstagramStory = useCallback(async () => {
     if (!url || !image) return;
 
-    if (!isMobileDevice()) {
-      showStatus(t.instagramDesktop);
-      return;
-    }
+    setOpen(false);
+    setStoryOpen(true);
+    setStoryLoading(true);
+    setStoryAssets((prev) => {
+      revokeStoryPreview(prev);
+      return null;
+    });
 
     const assets = await buildInstagramStoryImage(image, url, title, url, locale);
     if (!assets) {
-      showStatus(t.instagramFailed);
+      setStoryLoading(false);
+      setStoryOpen(false);
       return;
     }
 
     await copyPostLink(url);
-
-    const shareResult = await shareImageFile(assets.file, { title, url });
-    if (shareResult === "shared") {
-      showStatus(t.instagramLinkReady);
-      return;
-    }
-    if (shareResult === "aborted") {
-      setOpen(false);
-      return;
-    }
-
-    const pasted = await copyImageBlobToClipboard(assets.pngBlob);
-    if (pasted) {
-      await copyPostLink(url);
-      openInstagramApp();
-      showStatus(t.instagramPaste);
-      return;
-    }
-
-    await copyPostLink(url);
-    showStatus(t.instagramPickStory);
-  }, [
-    image,
-    locale,
-    showStatus,
-    t.instagramDesktop,
-    t.instagramFailed,
-    t.instagramLinkReady,
-    t.instagramPaste,
-    t.instagramPickStory,
-    title,
-    url,
-  ]);
+    setLinkCopied(true);
+    setStoryAssets(assets);
+    setStoryLoading(false);
+  }, [image, locale, title, url]);
 
   const nativeShare = useCallback(async () => {
     if (!url || !navigator.share) return;
@@ -181,6 +187,8 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
     { id: "whatsapp", label: t.whatsapp },
   ] as const;
 
+  const displayUrl = url.replace(/^https?:\/\//, "");
+
   return (
     <div className="blog-share" ref={rootRef}>
       <button
@@ -196,12 +204,6 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
         </span>
         {t.share}
       </button>
-
-      {status ? (
-        <p className="blog-share__status" role="status">
-          {status}
-        </p>
-      ) : null}
 
       {open ? (
         <div id={menuId} className="blog-share__menu" role="menu" aria-label={t.sharePost}>
@@ -230,7 +232,7 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
               className="blog-share__item"
               role="menuitem"
               aria-label={t.instagramHint}
-              onClick={() => void shareInstagram()}
+              onClick={() => void openInstagramStory()}
             >
               {t.instagram}
             </button>
@@ -238,6 +240,84 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
           <button type="button" className="blog-share__item blog-share__item--copy" role="menuitem" onClick={() => void copyLink()}>
             {copied ? t.copied : t.copy}
           </button>
+        </div>
+      ) : null}
+
+      {storyOpen ? (
+        <div className="blog-share__story-backdrop" onClick={closeStoryPanel}>
+          <div
+            id={storyDialogId}
+            className="blog-share__story"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${storyDialogId}-title`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="blog-share__story-head">
+              <h3 id={`${storyDialogId}-title`} className="blog-share__story-title">
+                {t.storyTitle}
+              </h3>
+              <button type="button" className="blog-share__story-close" onClick={closeStoryPanel}>
+                {t.storyClose}
+              </button>
+            </div>
+
+            {storyLoading ? (
+              <p className="blog-share__story-loading">{t.storyGenerating}</p>
+            ) : storyAssets ? (
+              <>
+                <img
+                  className="blog-share__story-preview"
+                  src={storyAssets.previewUrl}
+                  alt={title}
+                  width={270}
+                  height={480}
+                />
+
+                <ol className="blog-share__story-steps">
+                  <li>{t.storyStep1}</li>
+                  <li>{t.storyStep2}</li>
+                  <li>{t.storyStep3}</li>
+                </ol>
+
+                <p className="blog-share__story-link-label">{t.storyLinkSticker}</p>
+                <p className="blog-share__story-link">
+                  <span className="blog-share__story-link-arrow" aria-hidden="true">
+                    →
+                  </span>
+                  <code>{displayUrl}</code>
+                </p>
+                {linkCopied ? <p className="blog-share__story-note">{t.storyLinkCopied}</p> : null}
+
+                <div className="blog-share__story-actions">
+                  <button
+                    type="button"
+                    className="blog-share__story-btn blog-share__story-btn--primary"
+                    onClick={() => downloadStoryImage(storyAssets.file)}
+                  >
+                    {t.storyDownload}
+                  </button>
+                  <button type="button" className="blog-share__story-btn" onClick={() => void copyStoryLink()}>
+                    {linkCopied ? t.copied : t.storyCopyLink}
+                  </button>
+                  {isMobileDevice() ? (
+                    <button
+                      type="button"
+                      className="blog-share__story-btn"
+                      onClick={() => {
+                        downloadStoryImage(storyAssets.file);
+                        openInstagramApp();
+                      }}
+                    >
+                      {t.storyOpenIg}
+                    </button>
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <p className="blog-share__story-loading">{t.instagramFailed}</p>
+            )}
+          </div>
         </div>
       ) : null}
     </div>
