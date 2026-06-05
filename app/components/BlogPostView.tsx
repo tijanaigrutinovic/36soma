@@ -95,11 +95,6 @@ export function BlogPostView({ post, locale = "en" }: BlogPostViewProps) {
             );
           })}
         </div>
-        <p className="blog-post__alt-locale">
-          <a href={blogPostHref(isSr ? "en" : "sr", post.slug)}>
-            {isSr ? "Read in English →" : "Pročitaj na srpskom →"}
-          </a>
-        </p>
 
         <p className="blog-post__follow cta__text">
           {isSr ? (
