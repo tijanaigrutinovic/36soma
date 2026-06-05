@@ -137,6 +137,24 @@ export function revokeStoryPreview(assets: InstagramStoryAssets | null) {
   if (assets?.previewUrl) URL.revokeObjectURL(assets.previewUrl);
 }
 
+export function canSaveStoryToPhotos(file: File): boolean {
+  if (!navigator.share) return false;
+  const payload: ShareData = { files: [file] };
+  return !navigator.canShare || navigator.canShare(payload);
+}
+
+export async function saveStoryToPhotos(file: File): Promise<"shared" | "aborted" | "unsupported"> {
+  if (!canSaveStoryToPhotos(file)) return "unsupported";
+
+  try {
+    await navigator.share({ files: [file] });
+    return "shared";
+  } catch (err) {
+    if ((err as Error).name === "AbortError") return "aborted";
+    return "unsupported";
+  }
+}
+
 export function downloadStoryImage(file: File) {
   const url = URL.createObjectURL(file);
   const anchor = document.createElement("a");
@@ -144,6 +162,15 @@ export function downloadStoryImage(file: File) {
   anchor.download = file.name;
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+export async function saveStoryImage(file: File): Promise<"photos" | "download" | "aborted"> {
+  const shareResult = await saveStoryToPhotos(file);
+  if (shareResult === "shared" || shareResult === "aborted") {
+    return shareResult === "shared" ? "photos" : "aborted";
+  }
+  downloadStoryImage(file);
+  return "download";
 }
 
 export async function copyPostLink(url: string): Promise<boolean> {

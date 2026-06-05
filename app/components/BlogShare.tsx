@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   buildInstagramStoryImage,
+  canSaveStoryToPhotos,
   copyPostLink,
-  downloadStoryImage,
   isMobileDevice,
   openInstagramApp,
   revokeStoryPreview,
+  saveStoryImage,
   type InstagramStoryAssets,
 } from "../lib/instagramShareImage";
 import type { BlogLocale } from "../lib/blog";
@@ -36,11 +37,14 @@ const copy = {
     storyTitle: "Instagram Story",
     storyClose: "Close",
     storyGenerating: "Creating story image…",
-    storyStep1: "Download the story image",
+    storyStep1Photos: "Save the story image to Photos",
+    storyStep1Download: "Download the story image",
     storyStep2: "Post it on your Instagram Story",
     storyStep3: "Add Link sticker and paste the link below",
     storyLinkSticker: "Link sticker",
+    storySavePhotos: "Save to Photos",
     storyDownload: "Download image",
+    storySaveHint: "Pick «Save Image» in the share menu",
     storyOpenIg: "Open Instagram",
     storyLinkCopied: "Link copied — paste into Link sticker",
     storyCopyLink: "Copy link again",
@@ -61,11 +65,14 @@ const copy = {
     storyTitle: "Instagram Story",
     storyClose: "Zatvori",
     storyGenerating: "Pravim story sliku…",
-    storyStep1: "Preuzmi story sliku",
+    storyStep1Photos: "Sačuvaj story sliku u Slike",
+    storyStep1Download: "Preuzmi story sliku",
     storyStep2: "Postavi je na Instagram Story",
     storyStep3: "Dodaj Link nalepnicu i nalepi link ispod",
     storyLinkSticker: "Link nalepnica",
+    storySavePhotos: "Sačuvaj u slike",
     storyDownload: "Preuzmi sliku",
+    storySaveHint: "U meniju izaberi «Sačuvaj sliku»",
     storyOpenIg: "Otvori Instagram",
     storyLinkCopied: "Link je kopiran — nalepi u Link nalepnicu",
     storyCopyLink: "Kopiraj link ponovo",
@@ -84,6 +91,8 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
   const [storyAssets, setStoryAssets] = useState<InstagramStoryAssets | null>(null);
   const [storyOpen, setStoryOpen] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [saveHint, setSaveHint] = useState(false);
+  const [canSaveStory, setCanSaveStory] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
 
   const closeStoryPanel = useCallback(() => {
@@ -93,7 +102,16 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
       return null;
     });
     setLinkCopied(false);
+    setSaveHint(false);
   }, []);
+
+  useEffect(() => {
+    if (!storyAssets?.file) {
+      setCanSaveStory(false);
+      return;
+    }
+    setCanSaveStory(canSaveStoryToPhotos(storyAssets.file));
+  }, [storyAssets]);
 
   useEffect(() => {
     setUrl(window.location.href);
@@ -136,6 +154,15 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
       window.setTimeout(() => setCopied(false), 2000);
     }
   }, [url]);
+
+  const handleSaveStory = useCallback(async () => {
+    if (!storyAssets) return;
+    const result = await saveStoryImage(storyAssets.file);
+    if (result === "photos") {
+      setSaveHint(true);
+      window.setTimeout(() => setSaveHint(false), 5000);
+    }
+  }, [storyAssets]);
 
   const copyStoryLink = useCallback(async () => {
     if (!url) return;
@@ -275,7 +302,7 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
                 />
 
                 <ol className="blog-share__story-steps">
-                  <li>{t.storyStep1}</li>
+                  <li>{canSaveStory ? t.storyStep1Photos : t.storyStep1Download}</li>
                   <li>{t.storyStep2}</li>
                   <li>{t.storyStep3}</li>
                 </ol>
@@ -288,27 +315,21 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
                   <code>{displayUrl}</code>
                 </p>
                 {linkCopied ? <p className="blog-share__story-note">{t.storyLinkCopied}</p> : null}
+                {saveHint ? <p className="blog-share__story-note">{t.storySaveHint}</p> : null}
 
                 <div className="blog-share__story-actions">
                   <button
                     type="button"
                     className="blog-share__story-btn blog-share__story-btn--primary"
-                    onClick={() => downloadStoryImage(storyAssets.file)}
+                    onClick={() => void handleSaveStory()}
                   >
-                    {t.storyDownload}
+                    {canSaveStory ? t.storySavePhotos : t.storyDownload}
                   </button>
                   <button type="button" className="blog-share__story-btn" onClick={() => void copyStoryLink()}>
                     {linkCopied ? t.copied : t.storyCopyLink}
                   </button>
                   {isMobileDevice() ? (
-                    <button
-                      type="button"
-                      className="blog-share__story-btn"
-                      onClick={() => {
-                        downloadStoryImage(storyAssets.file);
-                        openInstagramApp();
-                      }}
-                    >
+                    <button type="button" className="blog-share__story-btn" onClick={() => openInstagramApp()}>
                       {t.storyOpenIg}
                     </button>
                   ) : null}
