@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { asset } from "../lib/asset";
+import {
+  buildInstagramStoryImage,
+  copyImageBlobToClipboard,
+  isMobileDevice,
+  openInstagramApp,
+  shareImageFile,
+} from "../lib/instagramShareImage";
 import type { BlogLocale } from "../lib/blog";
 
 type BlogShareProps = {
@@ -21,10 +27,13 @@ const copy = {
     facebook: "Facebook",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
-    instagram: "Instagram",
-    instagramHint: "Create Instagram post with this article image",
-    instagramFallback:
-      "Image saved and caption copied — open Instagram, upload the image, paste the caption.",
+    instagram: "Instagram Story",
+    instagramHint: "Share as Instagram Story",
+    instagramPickStory: "Pick Instagram, then Story in the share menu.",
+    instagramPaste:
+      "Image copied — open Instagram Story and paste (long-press on the canvas).",
+    instagramDesktop: "Instagram Story works on your phone — open this post on mobile and tap Share.",
+    instagramFailed: "Could not open share — try again in Safari or Chrome on your phone.",
   },
   sr: {
     share: "Podeli",
@@ -36,10 +45,14 @@ const copy = {
     facebook: "Facebook",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
-    instagram: "Instagram",
-    instagramHint: "Napravi Instagram objavu sa slikom teksta",
-    instagramFallback:
-      "Slika sačuvana i tekst kopiran — otvori Instagram, ubaci sliku i nalepi opis.",
+    instagram: "Instagram Story",
+    instagramHint: "Podeli kao Instagram Story",
+    instagramPickStory: "Izaberi Instagram, pa Story u meniju za deljenje.",
+    instagramPaste:
+      "Slika je kopirana — otvori Instagram Story i nalepi (dugi pritisak na ekran).",
+    instagramDesktop:
+      "Instagram Story radi sa telefona — otvori ovaj tekst na mobilnom i klikni Podeli.",
+    instagramFailed: "Deljenje nije uspelo — probaj ponovo u Safariju ili Chrome-u na telefonu.",
   },
 } as const;
 
@@ -60,34 +73,6 @@ function shareUrl(platform: string, url: string, title: string): string {
     default:
       return url;
   }
-}
-
-function captionFor(title: string, url: string): string {
-  return `${title}\n\n${url}`;
-}
-
-async function fetchImageFile(imagePath: string, pageUrl: string): Promise<File | null> {
-  try {
-    const imageUrl = new URL(asset(imagePath), pageUrl).href;
-    const res = await fetch(imageUrl);
-    if (!res.ok) return null;
-    const blob = await res.blob();
-    const ext = blob.type.includes("png") ? "png" : blob.type.includes("webp") ? "webp" : "jpg";
-    return new File([blob], `36soma-blog.${ext}`, { type: blob.type || "image/jpeg" });
-  } catch {
-    return null;
-  }
-}
-
-function downloadImage(imagePath: string, pageUrl: string) {
-  const imageUrl = new URL(asset(imagePath), pageUrl).href;
-  const a = document.createElement("a");
-  a.href = imageUrl;
-  a.download = "36soma-blog.webp";
-  a.rel = "noopener";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
 }
 
 export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
@@ -126,6 +111,12 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
     };
   }, [open]);
 
+  const showStatus = useCallback((message: string) => {
+    setStatus(message);
+    setOpen(false);
+    window.setTimeout(() => setStatus(null), 6000);
+  }, []);
+
   const copyLink = useCallback(async () => {
     if (!url) return;
     try {
@@ -138,60 +129,39 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
   }, [url]);
 
   const shareInstagram = useCallback(async () => {
-    if (!url) return;
-    const caption = captionFor(title, url);
+    if (!url || !image) return;
 
-    if (image && navigator.share) {
-      const file = await fetchImageFile(image, url);
-      if (file) {
-        const payload: ShareData = { files: [file], title, text: caption };
-        const canShareFiles = !navigator.canShare || navigator.canShare(payload);
-        if (canShareFiles) {
-          try {
-            await navigator.share(payload);
-            setOpen(false);
-            setStatus(null);
-            return;
-          } catch (err) {
-            if ((err as Error).name === "AbortError") {
-              setOpen(false);
-              return;
-            }
-          }
-        }
-      }
+    if (!isMobileDevice()) {
+      showStatus(t.instagramDesktop);
+      return;
     }
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, text: caption, url });
-        setOpen(false);
-        return;
-      } catch (err) {
-        if ((err as Error).name === "AbortError") {
-          setOpen(false);
-          return;
-        }
-      }
+    const assets = await buildInstagramStoryImage(image, url, title, url);
+    if (!assets) {
+      showStatus(t.instagramFailed);
+      return;
     }
 
-    try {
-      await navigator.clipboard.writeText(caption);
-      setCopied(true);
-    } catch {
-      /* clipboard blocked */
-    }
-
-    if (image) downloadImage(image, url);
-
-    window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-    setStatus(t.instagramFallback);
-    setOpen(false);
-    window.setTimeout(() => {
-      setCopied(false);
+    const shareResult = await shareImageFile(assets.file);
+    if (shareResult === "shared") {
+      setOpen(false);
       setStatus(null);
-    }, 5000);
-  }, [image, t.instagramFallback, title, url]);
+      return;
+    }
+    if (shareResult === "aborted") {
+      setOpen(false);
+      return;
+    }
+
+    const pasted = await copyImageBlobToClipboard(assets.pngBlob);
+    if (pasted) {
+      openInstagramApp();
+      showStatus(t.instagramPaste);
+      return;
+    }
+
+    showStatus(t.instagramPickStory);
+  }, [image, showStatus, t.instagramDesktop, t.instagramFailed, t.instagramPaste, t.instagramPickStory, title, url]);
 
   const nativeShare = useCallback(async () => {
     if (!url || !navigator.share) return;
@@ -252,15 +222,17 @@ export function BlogShare({ title, locale = "en", image }: BlogShareProps) {
               {net.label}
             </a>
           ))}
-          <button
-            type="button"
-            className="blog-share__item"
-            role="menuitem"
-            aria-label={t.instagramHint}
-            onClick={() => void shareInstagram()}
-          >
-            {t.instagram}
-          </button>
+          {image ? (
+            <button
+              type="button"
+              className="blog-share__item"
+              role="menuitem"
+              aria-label={t.instagramHint}
+              onClick={() => void shareInstagram()}
+            >
+              {t.instagram}
+            </button>
+          ) : null}
           <button type="button" className="blog-share__item blog-share__item--copy" role="menuitem" onClick={() => void copyLink()}>
             {copied ? t.copied : t.copy}
           </button>
