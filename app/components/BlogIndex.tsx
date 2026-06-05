@@ -30,16 +30,7 @@ export function BlogIndex({ locale = "en" }: BlogIndexProps) {
             </>
           ) : (
             <>
-              Short stories, tips, and events — more on{" "}
-              <a
-                href="https://www.instagram.com/36soma.runners/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta__email"
-              >
-                @36soma.runners
-              </a>
-              .
+              Short stories, tips and moments we take from the track.
             </>
           )}
         </p>

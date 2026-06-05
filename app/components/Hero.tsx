@@ -25,7 +25,6 @@ export function Hero({ locale = "en" }: HeroProps) {
       <div className="hero__noise" aria-hidden="true" />
       <div className="hero__scan" aria-hidden="true" />
       <div className="hero__grid" aria-hidden="true" />
-      <div className="hero__vignette" aria-hidden="true" />
       <div className="hero__water js-hero-parallax" aria-hidden="true">
         36
       </div>

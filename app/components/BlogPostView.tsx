@@ -6,6 +6,7 @@ import {
   type BlogLocale,
   type BlogPost,
 } from "../lib/blog";
+import { BlogShare } from "./BlogShare";
 import { SiteImage } from "./SiteImage";
 
 type BlogPostViewProps = {
@@ -20,12 +21,15 @@ export function BlogPostView({ post, locale = "en" }: BlogPostViewProps) {
     <article className="section section--blog-post">
       <div className="section__inner blog-post__inner">
         <header className="blog-post__meta">
-          <Link href={blogPostPath(locale)} className="blog-post__back">
-            {isSr ? "← Nazad na blog" : "← Back to blog"}
-          </Link>
-          <time className="blog-post__date" dateTime={post.date}>
-            {formatBlogDate(post.date, locale)}
-          </time>
+          <div className="blog-post__meta-start">
+            <Link href={blogPostPath(locale)} className="blog-post__back">
+              {isSr ? "← Nazad na blog" : "← Back to blog"}
+            </Link>
+            <time className="blog-post__date" dateTime={post.date}>
+              {formatBlogDate(post.date, locale)}
+            </time>
+          </div>
+          <BlogShare title={post.title[locale]} locale={locale} image={post.image} />
         </header>
         <h1 className="section__heading section__heading--xl blog-post__title">{post.title[locale]}</h1>
         <ul className="blog__tags blog__tags--post" aria-label={isSr ? "Oznake" : "Tags"}>

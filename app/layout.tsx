@@ -3,6 +3,7 @@ import Script from "next/script";
 import { asset } from "./lib/asset";
 import { CursorOverlay } from "./components/CursorOverlay";
 import { RouteAnimationSync } from "./components/RouteAnimationSync";
+import { ThemeScript } from "./components/ThemeScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,8 +22,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="sr" className="is-loading" data-scroll-behavior="smooth">
+    <html
+      lang="sr"
+      className="is-loading"
+      data-scroll-behavior="smooth"
+      data-theme="dark"
+      suppressHydrationWarning
+    >
       <head>
+        <ThemeScript />
         <link rel="icon" href={faviconDataUri} type="image/svg+xml" />
         <link rel="icon" href={asset("/favicon.svg")} type="image/svg+xml" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
